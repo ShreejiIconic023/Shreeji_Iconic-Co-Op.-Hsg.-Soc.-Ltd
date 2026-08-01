@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shreeji Iconic CHS — Monthly Financial Dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+
+:root{
+  --paper:#f6f1e4;
+  --paper-2:#efe8d6;
+  --card:#fffdf7;
+  --ink:#1e2a3d;
+  --ink-soft:#54627a;
+  --rule:#cbbf9f;
+  --good:#2f6a4a;
+  --good-bg:#e7f0e6;
+  --warn:#a2361f;
+  --warn-bg:#f6e6df;
+  --gold:#8a6a20;
+  --gold-bg:#f2e9d3;
+  --shadow: 0 1px 0 rgba(30,42,61,0.06);
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--paper);
+  background-image:
+    linear-gradient(var(--paper) 0%, var(--paper) 100%);
+  color:var(--ink);
+  font-family:'IBM Plex Sans', sans-serif;
+  line-height:1.5;
+  padding:32px 16px 80px;
+}
+
+.sheet{
+  max-width:980px;
+  margin:0 auto;
+  background:var(--card);
+  border:1px solid var(--rule);
+  box-shadow: 0 12px 40px rgba(30,42,61,0.10);
+}
+
+/* ---- Masthead ---- */
+.masthead{
+  position:relative;
+  padding:36px 40px 28px;
+  border-bottom:3px double var(--ink);
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:24px;
+}
+.masthead-left .eyebrow{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  margin:0 0 6px;
+}
+.masthead-left h1{
+  font-family:'Source Serif 4', serif;
+  font-weight:700;
+  font-size:clamp(26px,4vw,38px);
+  margin:0 0 6px;
+  letter-spacing:-0.01em;
+}
+.masthead-left .period{
+  font-family:'Source Serif 4', serif;
+  font-style:italic;
+  font-size:17px;
+  color:var(--ink-soft);
+}
+
+.stamp{
+  flex:none;
+  width:118px;
+  height:118px;
+  border-radius:50%;
+  border:2.5px solid var(--good);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transform:rotate(-8deg);
+  position:relative;
+}
+.stamp.warn{border-color:var(--warn);}
+.stamp::before{
+  content:"";
+  position:absolute;
+  inset:6px;
+  border-radius:50%;
+  border:1px dashed currentColor;
+  color:inherit;
+}
+.stamp .stamp-inner{
+  text-align:center;
+  color:var(--good);
+}
+.stamp.warn .stamp-inner{color:var(--warn);}
+.stamp .pct{
+  font-family:'IBM Plex Mono', monospace;
+  font-weight:700;
+  font-size:22px;
+  display:block;
+  line-height:1;
+}
+.stamp .lbl{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:8.5px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  display:block;
+  margin-top:4px;
+}
+
+/* ---- Section shell ---- */
+section{padding:28px 40px;border-bottom:1px solid var(--rule);}
+section:last-of-type{border-bottom:none;}
+.section-title{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  margin:0 0 18px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.section-title::after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:var(--rule);
+}
+
+/* ---- KPI ledger ---- */
+.kpi-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:0;
+  border:1px solid var(--rule);
+}
+.kpi{
+  padding:16px 18px;
+  border-right:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+}
+.kpi:nth-last-child(-n+1){border-right:1px solid var(--rule);}
+.kpi .k-label{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:10.5px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  margin-bottom:6px;
+}
+.kpi .k-value{
+  font-family:'IBM Plex Mono', monospace;
+  font-weight:600;
+  font-size:20px;
+}
+.kpi.neg .k-value{color:var(--warn);}
+.kpi.pos .k-value{color:var(--good);}
+
+/* ---- Status bar ---- */
+.status-bar-track{
+  display:flex;
+  height:34px;
+  border:1px solid var(--rule);
+  overflow:hidden;
+  margin-bottom:16px;
+}
+.status-seg{display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#fff;}
+.status-legend{display:flex;gap:28px;flex-wrap:wrap;}
+.status-legend .item{display:flex;align-items:center;gap:8px;font-size:13.5px;}
+.status-legend .swatch{width:11px;height:11px;border-radius:2px;flex:none;}
+.status-legend .amt{font-family:'IBM Plex Mono',monospace;color:var(--ink-soft);}
+
+/* ---- Tables ---- */
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+th{
+  text-align:left;
+  font-family:'IBM Plex Mono', monospace;
+  font-size:10.5px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  padding:8px 12px;
+  border-bottom:2px solid var(--ink);
+}
+td{padding:9px 12px;border-bottom:1px solid var(--rule);}
+tr:last-child td{border-bottom:none;}
+td.num, th.num{text-align:right;font-family:'IBM Plex Mono', monospace;}
+tr.total td{font-weight:700;border-top:2px solid var(--ink);background:var(--paper-2);}
+.pill{
+  display:inline-block;
+  padding:2px 9px;
+  border-radius:999px;
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  font-weight:600;
+}
+.pill.good{background:var(--good-bg);color:var(--good);}
+.pill.warn{background:var(--warn-bg);color:var(--warn);}
+
+/* ---- Accounts two-up ---- */
+.accounts-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;}
+@media(max-width:720px){.accounts-grid{grid-template-columns:1fr;}}
+.account-card{border:1px solid var(--rule);padding:18px 20px;background:var(--paper-2);}
+.account-card h3{
+  font-family:'Source Serif 4', serif;
+  font-size:16px;
+  margin:0 0 12px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--rule);
+}
+.account-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13.5px;border-bottom:1px dotted var(--rule);}
+.account-row:last-child{border-bottom:none;font-weight:700;padding-top:10px;margin-top:4px;border-top:1px solid var(--ink);}
+.account-row .v{font-family:'IBM Plex Mono', monospace;}
+
+/* ---- Note / circular ---- */
+.circular{
+  background:var(--paper-2);
+  border:1px solid var(--rule);
+  border-left:4px solid var(--ink);
+  padding:24px 28px;
+  font-family:'Source Serif 4', serif;
+  font-size:15px;
+}
+.circular p{margin:0 0 14px;}
+.circular .building-note{
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:13.5px;
+  background:var(--card);
+  border:1px solid var(--rule);
+  padding:12px 16px;
+  margin:0 0 10px;
+}
+.circular .building-note b{font-family:'IBM Plex Mono',monospace;}
+.circular .sign-off{margin-top:18px;font-style:italic;color:var(--ink-soft);}
+
+/* ---- Defaulters ---- */
+.controls{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+.controls input[type="search"]{
+  font-family:'IBM Plex Sans', sans-serif;
+  font-size:13.5px;
+  padding:8px 12px;
+  border:1px solid var(--rule);
+  background:var(--card);
+  min-width:220px;
+  flex:1;
+}
+.controls select{
+  font-family:'IBM Plex Sans', sans-serif;
+  font-size:13.5px;
+  padding:8px 12px;
+  border:1px solid var(--rule);
+  background:var(--card);
+}
+.result-count{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-soft);}
+.table-scroll{max-height:480px;overflow-y:auto;border:1px solid var(--rule);}
+.table-scroll table{font-size:13px;}
+.table-scroll thead th{position:sticky;top:0;background:var(--card);z-index:1;}
+#defaultersBody tr:hover{background:var(--paper-2);}
+
+/* ---- Footer ---- */
+footer{
+  padding:22px 40px 30px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  color:var(--ink-soft);
+}
+
+@media(max-width:600px){
+  .masthead{flex-direction:column;}
+  section{padding:22px 20px;}
+  footer{padding:20px;}
+}
+</style>
+</head>
+<body>
+
+<div class="sheet">
+
+  <div class="masthead">
+    <div class="masthead-left">
+      <p class="eyebrow">Shreeji Iconic Co-Op. Hsg. Soc. Ltd.</p>
+      <h1>Monthly Financial Dashboard</h1>
+      <p class="period">July 2026 · Maintenance Billing &amp; Collection Report</p>
+    </div>
+    <div class="stamp" id="stampBadge">
+      <div class="stamp-inner">
+        <span class="pct">95.6%</span>
+        <span class="lbl">Collected</span>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <p class="section-title">Collection Summary</p>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="k-label">Total Flats</div><div class="k-value">278</div></div>
+      <div class="kpi"><div class="k-label">Total Due</div><div class="k-value">₹7,00,820.50</div></div>
+      <div class="kpi pos"><div class="k-label">Collected</div><div class="k-value">₹5,83,493</div></div>
+      <div class="kpi neg"><div class="k-label">Outstanding</div><div class="k-value">₹2,03,752.50</div></div>
+      <div class="kpi"><div class="k-label">Pastdue / Advance</div><div class="k-value">₹86,425</div></div>
+      <div class="kpi"><div class="k-label">Monthly Expense</div><div class="k-value">₹5,92,796.83</div></div>
+      <div class="kpi neg"><div class="k-label">Shortfall</div><div class="k-value">−₹95,728.83</div></div>
+      <div class="kpi"><div class="k-label">Defaulters</div><div class="k-value">91</div></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-title">Payment Status Breakdown</p>
+    <div class="status-bar-track">
+      <div class="status-seg" style="width:41.7%;background:var(--good);">41.7%</div>
+      <div class="status-seg" style="width:25.5%;background:var(--gold);">25.5%</div>
+      <div class="status-seg" style="width:32.7%;background:var(--warn);">32.7%</div>
+    </div>
+    <div class="status-legend">
+      <div class="item"><span class="swatch" style="background:var(--good);"></span>Paid — 116 flats <span class="amt">₹5,55,989</span></div>
+      <div class="item"><span class="swatch" style="background:var(--gold);"></span>Advance — 71 flats <span class="amt">₹86,425</span></div>
+      <div class="item"><span class="swatch" style="background:var(--warn);"></span>Outstanding — 91 flats <span class="amt">₹2,03,752.50</span></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-title">Building-Wise Performance</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Building</th><th class="num">Flats</th><th class="num">Total Due</th>
+          <th class="num">Collected</th><th class="num">Advance / Due</th>
+          <th class="num">Outstanding</th><th class="num">Collection %</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>B01</td><td class="num">88</td><td class="num">₹2,12,261</td><td class="num">₹1,95,274</td><td class="num">−₹41,595</td><td class="num">₹58,582</td><td class="num"><span class="pill good">111.6%</span></td></tr>
+        <tr><td>B02</td><td class="num">103</td><td class="num">₹2,66,567</td><td class="num">₹2,01,282</td><td class="num">−₹22,508</td><td class="num">₹87,793</td><td class="num"><span class="pill warn">84.0%</span></td></tr>
+        <tr><td>B03</td><td class="num">87</td><td class="num">₹2,21,992.50</td><td class="num">₹1,86,937</td><td class="num">−₹22,322</td><td class="num">₹57,377.50</td><td class="num"><span class="pill good">94.3%</span></td></tr>
+        <tr class="total"><td>Total</td><td class="num">278</td><td class="num">₹7,00,820.50</td><td class="num">₹5,83,493</td><td class="num">−₹86,425</td><td class="num">₹2,03,752.50</td><td class="num">95.6%</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <p class="section-title">Bank Position</p>
+    <div class="accounts-grid">
+      <div class="account-card">
+        <h3>Maintenance Collection Account</h3>
+        <div class="account-row"><span>Opening Balance</span><span class="v">₹4,01,535.60</span></div>
+        <div class="account-row"><span>Total Collected</span><span class="v">₹6,27,982.00</span></div>
+        <div class="account-row"><span>Total Monthly Expenses Paid</span><span class="v">₹5,28,158.00</span></div>
+        <div class="account-row"><span>Balance Before Repair &amp; Sinking Fund</span><span class="v">₹5,01,359.60</span></div>
+        <div class="account-row"><span>Transfer to Repair &amp; Sinking Fund</span><span class="v">₹99,867.00</span></div>
+        <div class="account-row"><span>Final Closing Balance</span><span class="v">₹4,01,492.60</span></div>
+      </div>
+      <div class="account-card">
+        <h3>Main Bank Statement</h3>
+        <div class="account-row"><span>Opening Balance</span><span class="v">₹9,00,870.60</span></div>
+        <div class="account-row"><span>Total Maintenance Received</span><span class="v">₹8,77,982.00</span></div>
+        <div class="account-row"><span>Total Expenses</span><span class="v">₹5,28,158.00</span></div>
+        <div class="account-row"><span>Closing Balance</span><span class="v">₹12,50,694.60</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-title">Committee Note</p>
+    <div class="circular">
+      <p>Dear Members,</p>
+      <p>The summary of the society's financial position for the month of July 2026 is as follows. The overall collection rate stands at <strong>95.59%</strong>.</p>
+      <div class="building-note"><b>B01</b> — 88 flats · Collection 111.6% · Outstanding ₹58,582 <em>(collection exceeds 100% on account of advance payments received)</em></div>
+      <div class="building-note"><b>B02</b> — 103 flats · Collection 84.0% · Outstanding ₹87,793</div>
+      <div class="building-note"><b>B03</b> — 87 flats · Collection 94.3% · Outstanding ₹57,377.50</div>
+      <p>Monthly expenses of ₹5,92,796.83 against collections of ₹5,83,493 leave a shortfall of ₹95,728.83 for the month, adjusted from the account's carried-forward balance.</p>
+      <p class="sign-off">Thank you,<br>Shreeji Iconic CHS Ltd</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-title">Outstanding Dues — All Flats</p>
+    <div class="controls">
+      <input type="search" id="searchBox" placeholder="Search by flat number or owner name…">
+      <select id="buildingFilter">
+        <option value="">All buildings</option>
+        <option value="B01">B01</option>
+        <option value="B02">B02</option>
+        <option value="B03">B03</option>
+      </select>
+      <span class="result-count" id="resultCount"></span>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Flat No.</th><th>Owner</th><th class="num">Days Overdue</th><th class="num">Amount Due</th><th>Status</th></tr>
+        </thead>
+        <tbody id="defaultersBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <span>Generated for internal circulation · figures per society records for July 2026</span>
+    <span id="genDate"></span>
+  </footer>
+
+</div>
+
+<script>
+const defaulters = [{"flat":"B02-107","owner":"Sachin Deore","days":1,"amount":3275},{"flat":"B03-807","owner":"Pravinkumar S Pal","days":1,"amount":3102},{"flat":"B02-207","owner":"Meghabhai T. Rabari","days":1,"amount":3097},{"flat":"B03-202","owner":"John Britto","days":1,"amount":3092},{"flat":"B03-401","owner":"Sneha Gupte","days":1,"amount":3086},{"flat":"B02-002","owner":"Sunil Sonu Khandagale","days":1,"amount":3085},{"flat":"B03-701","owner":"Prajakta Patil","days":1,"amount":3082},{"flat":"B02-307","owner":"Sambhaji Shelke","days":1,"amount":2857},{"flat":"B02-1001","owner":"Rekha Manoj Dev","days":1,"amount":2855},{"flat":"B02-1002","owner":"Manoj Shankar Dev","days":1,"amount":2855},{"flat":"B02-201","owner":"Raju Bhujang Thite","days":1,"amount":2855},{"flat":"B02-401","owner":"Tukaram Supekar","days":1,"amount":2855},{"flat":"B02-601","owner":"Sagar Sanjay Kalmade","days":1,"amount":2855},{"flat":"B02-801","owner":"Atul Nerpagar","days":1,"amount":2855},{"flat":"B02-802","owner":"Madhura Nachane","days":1,"amount":2855},{"flat":"B03-201","owner":"Chandrakant Pawar","days":1,"amount":2846},{"flat":"B02-001","owner":"Pooja Gudekar","days":1,"amount":2845},{"flat":"B02-906","owner":"Raviraj Sominath Mastud","days":1,"amount":2845},{"flat":"B03-101","owner":"Nikhil Kadu","days":1,"amount":2842.5},{"flat":"B03-501","owner":"Gorakhnath Dahifale","days":1,"amount":2842},{"flat":"B02-006","owner":"Rajlaxmi Developers","days":1,"amount":2832},{"flat":"B03-002","owner":"Rajlaxmi Developers","days":1,"amount":2827},{"flat":"B03-007","owner":"Rajlaxmi Developers","days":1,"amount":2827},{"flat":"B03-001","owner":"Rajlaxmi Developers","days":1,"amount":2820},{"flat":"B03-006","owner":"Rajlaxmi Developers","days":1,"amount":2820},{"flat":"B01-701","owner":"Anil Sahebrao Patil","days":1,"amount":2772},{"flat":"B02-S06","owner":"Rajlaxmi Developers","days":1,"amount":2637},{"flat":"B02-S01","owner":"Pomaram K. Chaudhary","days":1,"amount":2627},{"flat":"B02-S02","owner":"Pomaram Chaudhary","days":1,"amount":2627},{"flat":"B02-S04","owner":"Ranjit Shetty","days":1,"amount":2627},{"flat":"B02-S07","owner":"Rajlaxmi Developers","days":1,"amount":2612},{"flat":"B01-601","owner":"Somnath Bodare","days":1,"amount":2552},{"flat":"B01-810","owner":"Akshay Jadhav","days":1,"amount":2552},{"flat":"B02-809","owner":"Akash Patil","days":1,"amount":2535},{"flat":"B01-309","owner":"Sushant Bhosle","days":1,"amount":2532},{"flat":"B01-507","owner":"Ramkrishna Rakshit","days":1,"amount":2532},{"flat":"B01-508","owner":"Nagesh Gaikwd","days":1,"amount":2532},{"flat":"B01-802","owner":"Jayendrasingh Sodha","days":1,"amount":2532},{"flat":"B01-006","owner":"Kedar Vilas Sant","days":1,"amount":2522},{"flat":"B02-008","owner":"Neelam Kate","days":1,"amount":2517},{"flat":"B02-705","owner":"Dhananjay Shinde","days":1,"amount":2517},{"flat":"B03-708","owner":"Priyaranjan Mondal","days":1,"amount":2515},{"flat":"B02-701","owner":"Nitin Kinlekar","days":1,"amount":2355},{"flat":"B01-406","owner":"Sandeep Tandale","days":1,"amount":2345},{"flat":"B01-806","owner":"Kashinath Fanade","days":1,"amount":2345},{"flat":"B02-009","owner":"Vijaykumar Koteeswaran","days":1,"amount":2335},{"flat":"B01-104","owner":"Arvind Pandey","days":1,"amount":2332},{"flat":"B01-207","owner":"Rahul Ravindra Janjale","days":1,"amount":2332},{"flat":"B01-402","owner":"Arjun Bhila Borse","days":1,"amount":2332},{"flat":"B01-404","owner":"Patwardhan Pratibha Jitendra","days":1,"amount":2332},{"flat":"B01-409","owner":"Vinayak Dhadke","days":1,"amount":2332},{"flat":"B01-604","owner":"Vrushali Vijay Shelar","days":1,"amount":2332},{"flat":"B01-607","owner":"Vilas Ramesh Kharat","days":1,"amount":2332},{"flat":"B01-608","owner":"Amol Kate","days":1,"amount":2332},{"flat":"B01-704","owner":"Sunil Kisan Rathod","days":1,"amount":2332},{"flat":"B01-707","owner":"Prashant D Charate","days":1,"amount":2332},{"flat":"B01-708","owner":"Sanjivani Warkhade","days":1,"amount":2332},{"flat":"B01-805","owner":"Ashish Pralhad Jadhav","days":1,"amount":2332},{"flat":"B03-109","owner":"Laxmi Gupta","days":1,"amount":2332},{"flat":"B02-005","owner":"Mahadeo Shilwant","days":1,"amount":2317},{"flat":"B02-205","owner":"Sachin Sawarkar","days":1,"amount":2317},{"flat":"B02-908","owner":"Mayur More","days":1,"amount":2317},{"flat":"B03-005","owner":"Rajendra Dhanve","days":1,"amount":2317},{"flat":"B03-809","owner":"Nikhil N. Charate","days":1,"amount":2310},{"flat":"B03-104","owner":"Atul Patil","days":1,"amount":2302},{"flat":"B03-704","owner":"Roshni A Patwa","days":1,"amount":2302},{"flat":"B01-010","owner":"Mandar Shejwal","days":1,"amount":2300},{"flat":"B03-405","owner":"Madhuri Dhumal","days":1,"amount":2277},{"flat":"B02-804","owner":"Jitendra More","days":1,"amount":2267},{"flat":"B03-804","owner":"Saurabh Surkhade","days":1,"amount":2267},{"flat":"B03-903","owner":"Ujwala Ulhas Kale","days":1,"amount":2267},{"flat":"B02-203","owner":"Pravin Dalvi","days":1,"amount":2090},{"flat":"B02-403","owner":"Harish Galande","days":1,"amount":2090},{"flat":"B02-503","owner":"Deepak Suresh Mishra","days":1,"amount":2090},{"flat":"B02-603","owner":"Sachin Skaria Kalickal","days":1,"amount":2090},{"flat":"B02-404","owner":"Ravi Shetty","days":1,"amount":2087},{"flat":"B03-503","owner":"Bharat G Poojari","days":1,"amount":2087},{"flat":"B01-008","owner":"Surendra V. Telang","days":1,"amount":2077},{"flat":"B03-808","owner":"Rohini S Gangawane","days":1,"amount":1889},{"flat":"B02-309","owner":"Dinesh Gangawane","days":1,"amount":835},{"flat":"B01-407","owner":"Seema Shrikant Shanbhag","days":1,"amount":669},{"flat":"B02-909","owner":"Laxman Dodmani","days":1,"amount":660},{"flat":"B02-007","owner":"Pomaram K Caudhary","days":1,"amount":423},{"flat":"B03-806","owner":"Shruti Karpe","days":1,"amount":239},{"flat":"B01-809","owner":"Smita Satish Wagholikar","days":1,"amount":232},{"flat":"B03-703","owner":"Naresh N Gaikwad","days":1,"amount":87},{"flat":"B01-502","owner":"Prashant Kakade","days":1,"amount":36},{"flat":"B01-109","owner":"Sunanda J. Sawant","days":1,"amount":32},{"flat":"B01-506","owner":"Shashikant Temkar","days":1,"amount":25},{"flat":"B01-803","owner":"Pallavi Gaikwad","days":1,"amount":9},{"flat":"B01-401","owner":"Usha Dharam","days":1,"amount":2}];
+
+function inr(n){
+  return '₹' + Number(n).toLocaleString('en-IN', {minimumFractionDigits: n % 1 !== 0 ? 2 : 0, maximumFractionDigits: 2});
+}
+
+function render(){
+  const q = document.getElementById('searchBox').value.trim().toLowerCase();
+  const b = document.getElementById('buildingFilter').value;
+  const body = document.getElementById('defaultersBody');
+  const rows = defaulters.filter(d => {
+    const matchesQ = !q || d.flat.toLowerCase().includes(q) || d.owner.toLowerCase().includes(q);
+    const matchesB = !b || d.flat.startsWith(b);
+    return matchesQ && matchesB;
+  });
+  body.innerHTML = rows.map(d => `
+    <tr>
+      <td>${d.flat}</td>
+      <td>${d.owner}</td>
+      <td class="num">${d.days}</td>
+      <td class="num">${inr(d.amount)}</td>
+      <td><span class="pill warn">Outstanding</span></td>
+    </tr>
+  `).join('');
+  document.getElementById('resultCount').textContent = rows.length + ' of ' + defaulters.length + ' flats';
+}
+
+document.getElementById('searchBox').addEventListener('input', render);
+document.getElementById('buildingFilter').addEventListener('change', render);
+render();
+
+document.getElementById('genDate').textContent = 'Published ' + new Date().toLocaleDateString('en-IN', {day:'numeric', month:'long', year:'numeric'});
+</script>
+
+</body>
+</html>
